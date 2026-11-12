@@ -35,7 +35,8 @@ jobs:
       - name: Version from the base image
         id: v
         run: |
-          version=$(sed -nE 's/^FROM [a-z]+:([0-9.]+)-alpine@.*/\1/p' "${{ matrix.dir }}/Dockerfile")
+          # the last FROM is the runtime base; earlier ones are build stages
+          version=$(sed -nE 's/^FROM [a-z]+:([0-9.]+)-alpine@.*/\1/p' "${{ matrix.dir }}/Dockerfile" | tail -1)
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "major=${version%%.*}" >> "$GITHUB_OUTPUT"
       - name: Build for the test
@@ -46,7 +47,7 @@ jobs:
           pull: true
           tags: ${{ matrix.image }}:test
       - name: Smoke test
-        run: ./test.sh ${{ matrix.kind }} ${{ matrix.image }}:test
+        run: ./test.sh ${{ matrix.kind }} ${{ matrix.image }}:test ${{ steps.v.outputs.version }}
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
         uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0

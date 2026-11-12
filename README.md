@@ -9,7 +9,13 @@ oracle host: same configuration, paths, user, entrypoint and volumes.
 | `ghcr.io/shaman-rostov/postgres-alpine` | `postgres:<version>-alpine` (`postgres/18`, `postgres/16`) | `18`, `18.6`, `16`, `16.15`, `<version>-<commit>` |
 | `ghcr.io/shaman-rostov/caddy-alpine` | `caddy:<version>-alpine` | `2`, `2.11.9`, `<version>-<commit>` |
 
-Dependabot bumps the pinned base digests and minor versions; a major version is a deliberate change. CI starts each
+Go binaries are rebuilt from source with a current Go toolchain (`golang:<version>-alpine` build stage), because
+upstream images keep shipping binaries built with an old Go: `gosu` (the postgres entrypoint's privilege drop, upstream
+1.19 on Go 1.24.6) and `caddy` itself (same version and build tags as upstream; CI fails if `CADDY_VERSION` drifts from
+the base image).
+
+Dependabot bumps the pinned base and Go digests and minor versions; a major version is a deliberate change. `GOSU_VERSION`,
+`CADDY_VERSION` and `XCADDY_VERSION` are bumped by hand. CI starts each
 image (postgres answers a query, caddy serves its default page) before publishing.
 
 Switching a service: replace `postgres:18-alpine` with `ghcr.io/shaman-rostov/postgres-alpine:18` (or `caddy:2-alpine`
