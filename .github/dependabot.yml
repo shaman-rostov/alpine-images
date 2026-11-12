@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # a new postgres or caddy major is a deliberate change (data migration, config), not a routine bump
+  - package-ecosystem: docker
+    directories: [/postgres/18, /postgres/16, /caddy]
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
