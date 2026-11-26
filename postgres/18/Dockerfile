@@ -9,6 +9,6 @@ WORKDIR /src
 RUN go mod init build && go get github.com/tianon/gosu@$GOSU_VERSION \
  && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags=-s -o /out/gosu github.com/tianon/gosu
 
-FROM postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b
+FROM postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71
 RUN apk upgrade --no-cache
 COPY --from=gosu /out/gosu /usr/local/bin/gosu
